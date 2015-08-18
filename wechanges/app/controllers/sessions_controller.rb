@@ -1,3 +1,4 @@
+
 class SessionsController < ApplicationController
   before_action :set_authenticate, only: [:new, :create, :authenticate]
 
@@ -81,13 +82,17 @@ class SessionsController < ApplicationController
     
   end
   def logout
-     @sessions = Session.find(params[:id])
-    if Session.find_by(token: params[:token]) 
-      @sessions.destroy
-      
-      format.json { head :no_content }
-      end
     
+     
+    if Session.find_by(token: params[:token]) 
+      @sessions = Session.find(params[:id])
+      if @sessions.destroy
+      
+      format.json { render json: @sessions, status: 200  }
+      end
+    else
+       render json: {:error => "not-found-authtoken"}.to_json, status: 422
+    end
   end
 
 
@@ -103,6 +108,7 @@ class SessionsController < ApplicationController
     def session_params
       params.require(:session).permit(:token, :date, :id_user)
     end
+
 
 
 

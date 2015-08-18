@@ -1,3 +1,4 @@
+
 class TransactionsController < ApplicationController
   before_action :set_transaction, only: [:show, :edit, :update, :destroy]
 
@@ -5,6 +6,11 @@ class TransactionsController < ApplicationController
   # GET /transactions.json
   def index
     @transactions = Transaction.all
+     if Session.find_by(token: params[:token])
+        render json: @transactions, status: 200
+    else
+      render json: {:error => "not-found-authtoken"}.to_json, status: 422
+    end
   end
 
   # GET /transactions/1
@@ -24,15 +30,20 @@ class TransactionsController < ApplicationController
   # POST /transactions
   # POST /transactions.json
   def create
-    @transaction = Transaction.new(transaction_params)
-
-    respond_to do |format|
-      if @transaction.save
-        format.html { redirect_to @transaction, notice: 'Transaction was successfully created.' }
-        format.json { render :show, status: :created, location: @transaction }
+    @transaction = Transaction.new
+      respond_to do |format|
+      if Session.find_by(token: params[:token])
+      
+        @transaction.product_req_id = params[:product_req_id]
+        @transaction.product_offert_id = params[:product_offert_id]
+        @transaction.status = params[:status]
+        if @transaction.save
+         format.json { render json: @transaction, status: 201 }
+        else
+         format.json {render json: @transaction.errors, status: 422 }
+        end
       else
-        format.html { render :new }
-        format.json { render json: @transaction.errors, status: :unprocessable_entity }
+       format.json {render json: {:error => "not-found-authtoken"}.to_json, status: 422}
       end
     end
   end
@@ -71,4 +82,5 @@ class TransactionsController < ApplicationController
     def transaction_params
       params.require(:transaction).permit(:product_req_id, :product_offert_id, :status)
     end
+
 end

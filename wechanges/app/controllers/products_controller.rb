@@ -1,21 +1,22 @@
+
 class ProductsController < ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy]
 
   # GET /products
   # GET /products.json
   def index
-    @products = Product.all
-    respond_to do |format|
+    
+      @products = Product.all
       if Session.find_by(token: params[:token])
         if product = Product.find_by(name: params[:name])
           @products = product
         else
-          format.json {render json: @products, status: 200}
+          render json: @products, status: 200
         end 
       else
-       format.json {render json: {:error => "not-found-authtoken"}.to_json, status: 422}
+       render json: {:error => "not-found-authtoken"}.to_json, status: 422
       end
-    end
+    
   end
 
   # GET /products/1
@@ -97,7 +98,8 @@ class ProductsController < ApplicationController
   # DELETE /products/1
   # DELETE /products/1.json
   def destroy
-    if Session.find_by(token: params[:token])
+    respond_to do |format|
+      if Session.find_by(token: params[:token])
         if @product = Product.find(params[:id])
           @product.destroy
          
@@ -105,7 +107,7 @@ class ProductsController < ApplicationController
       else
       format.json {render json: {:error => "not-found-authtoken"}.to_json, status: 422}
       end
-   
+    end   
   end
 
   private
@@ -118,4 +120,5 @@ class ProductsController < ApplicationController
     def product_params
       params.require(:product).permit(:name, :description, :status)
     end
+
 end

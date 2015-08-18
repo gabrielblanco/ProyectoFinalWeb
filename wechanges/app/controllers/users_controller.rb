@@ -1,3 +1,4 @@
+
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
@@ -47,11 +48,21 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1.json
   def update
     respond_to do |format|
-      @user = User.find(params[:id])
-      if @user.update(user_params)
-        format.json { render :show, status: :ok, location: @user }
+      if Session.find_by(token: params[:token]) 
+        
+        if @user = User.find(params[:id])
+         @user.username = params[:username]
+         @user.password = params[:password]
+         @user.password_confirmation = params[:password_confirmation]
+         @user.firstname = params[:firstname]
+          if @user.save
+            format.json { render json: @user, status: 200 }
+          end
+        else
+            format.json { render json: @user.errors, status: 422 }
+        end
       else
-        format.json { render json: @user.errors, status: :unprocessable_entity }
+      format.json { render json: {:error => "not-found-authtoken"}.to_json, status: 422 }
       end
     end
   end
@@ -59,12 +70,15 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
-    @user = User.find(params[:id])
-    @user.destroy
-  respond_to do |format|
-      format.json { head :no_content }
+    respond_to do |format|
+      if Session.find_by(token: params[:token])
+        if @user = User.find(params[:id])
+          @user.destroy
+        end
+      else
+      format.json {render json: {:error => "not-found-authtoken"}.to_json, status: 422}
+      end
     end
-  
   end
 
   private
@@ -77,4 +91,5 @@ class UsersController < ApplicationController
     def user_params
       params.require(:user).permit(:username, :password, :password_confirmation, :firstname)
     end
+
 end
