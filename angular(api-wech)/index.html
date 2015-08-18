@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <link href='https://fonts.googleapis.com/css?family=Playfair+Display:400,400italic,700italic|Oswald' rel='stylesheet' type='text/css'>
+    <link href="css/main.css" rel="stylesheet" />
+    <script src="js/shared/angular.min.js"></script>
+  </head>
+  <body ng-app="WEchange">
+    <div class="header">
+      <h1><span>WEchange</span></h1>
+    </div>
+
+    <div class="main" ng-controller="MainController">
+      <div class="container">
+        <h1>Products</h1>
+        
+        <div class="products row" ng-repeat="product in products">
+          <div class="item col-md-9">
+            <h3 class="name"> {{ product.name }} </h3>
+            <p class="description"> {{ product.description }} </p>
+          </div>
+          <div class="status col-md-3">
+            <p class="status"> {{ product.status}} </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+    </div>
+    
+    <!-- Modules -->
+    <script src="js/app.js"></script>
+
+    <!-- Controllers -->
+    <script src="js/controllers/ProductController.js"></script>
+    <script src="js/controllers/SessionController.js"></script>
+    <script src="js/controllers/TransactionController.js"></script>
+    <script src="js/controllers/UserController.js"></script>
+
+    <!-- Directives -->
+
+    <!-- Services -->
+    <script src="js/services/products.js"></script>
+    <script src="js/services/sessions.js"></script>
+    <script src="js/services/transactions.js"></script>
+    <script src="js/services/users.js"></script>
+  </body>
+</html>
