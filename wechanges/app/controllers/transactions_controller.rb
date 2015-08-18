@@ -16,6 +16,17 @@ class TransactionsController < ApplicationController
   # GET /transactions/1
   # GET /transactions/1.json
   def show
+    respond_to do |format|
+        if Session.find_by(token: params[:token])
+          if @transaction = Transaction.find(params[:id])
+            format.json {render json: @transaction, status: 200}  
+          else
+            format.json {render json:{:error => "not-found"}.to_json, status: 422}
+          end
+        else
+        format.json {render json: {:error => "not-found-authtoken"}.to_json, status: 422}
+        end
+      end
   end
 
   # GET /transactions/new
@@ -25,6 +36,14 @@ class TransactionsController < ApplicationController
 
   # GET /transactions/1/edit
   def edit
+    if Session.find_by(token: params[:token])
+        @transaction = Transaction.edit(product_params)
+        if @transaction.save 
+          redirect_to '/index' 
+        else 
+          render 'new' 
+        end
+      end
   end
 
   # POST /transactions

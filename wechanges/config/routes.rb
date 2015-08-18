@@ -8,11 +8,15 @@ Rails.application.routes.draw do
       end
     end
 
-  resources :transactions
+  namespace :api, path: '/', constraints: { subdomain: 'api' } do 
 
-  resources :products
+    resources :transactions
 
-  resources :users
+    resources :products
+
+    resources :users
+
+  end
 
  
 
